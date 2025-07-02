@@ -1,6 +1,7 @@
 #include "linq.hpp"
 #include <assert.h>
 #include <vector>
+#include <iostream>
 
 using linq::from;
 
@@ -18,19 +19,30 @@ void from_select() {
     assert(res == expected);
 }
 
-// void from_drop_select() {
-//     const int xs[] = {1, 2, 3};
-//     std::vector<int> res = from(xs, xs + 3)
-//                                .drop(1)
-//                                .select([](int x) { return x + 5; })
-//                                .to_vector();
-//     std::vector<int> expected = {7, 8};
-//     assert(res == expected);
-// }
+void from_drop_select() {
+    // const int xs[] = {1, 2, 3};
+    // std::vector<int> res = from(xs, xs + 3)
+    //                            .drop(1)
+    //                            .select([](int x) { return x + 5; })
+    //                            .to_vector();
+    // std::vector<int> expected = {7, 8};
+    // assert(res == expected);
+
+    // auto res = from(xs, xs + 3).drop(1);
+}
+
+void range() {
+    const int xs[] = {1, 2, 3};
+    auto res = from(xs, xs + 3).select([](int x) { return x * x; }).to_vector();
+
+    std::vector<int> expected = {1, 4, 9};
+    assert(res == expected);
+}
 
 int main() {
     from_to_vector();
     from_select();
     // from_drop_select();
+    range();
     return 0;
 }
