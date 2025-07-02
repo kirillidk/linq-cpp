@@ -33,6 +33,15 @@ void from_drop_select() {
 
 void range() {
     const int xs[] = {1, 2, 3};
+    auto res = from(xs, xs + 3).select([](int x) { return x * x; });
+
+    for (auto&& el : res) {
+        std::cout << el;
+    }
+}
+
+void range_to_vector() {
+    const int xs[] = {1, 2, 3};
     auto res = from(xs, xs + 3).select([](int x) { return x * x; }).to_vector();
 
     std::vector<int> expected = {1, 4, 9};
@@ -44,5 +53,6 @@ int main() {
     from_select();
     // from_drop_select();
     range();
+    range_to_vector();
     return 0;
 }
