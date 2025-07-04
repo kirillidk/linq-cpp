@@ -29,6 +29,16 @@ void from_drop_select() {
     assert(res == expected);
 }
 
+void from_take_select() {
+    const int xs[] = {1, 2, 3};
+    std::vector<int> res = from(xs, xs + 3)
+                               .take(2)
+                               .select([](int x) { return x + 5; })
+                               .to_vector();
+    std::vector<int> expected = {6, 7};
+    assert(res == expected);
+}
+
 void range() {
     const int xs[] = {1, 2, 3};
     auto res = from(xs, xs + 3).select([](int x) { return x * x; });
@@ -54,6 +64,7 @@ int main() {
     from_to_vector();
     from_select();
     from_drop_select();
+    from_take_select();
     range();
     range_to_vector();
 

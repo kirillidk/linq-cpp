@@ -16,6 +16,8 @@ template <typename P, typename F>
 class select_enumerator;
 template <typename P>
 class drop_enumerator;
+template <typename P>
+class take_enumerator;
 
 template <typename P>
 class enumerator {
@@ -32,6 +34,10 @@ public:
 
     drop_enumerator<P> drop(uint32_t offset) {
         return drop_enumerator<P>(std::move(static_cast<P&>(*this)), offset);
+    }
+
+    take_enumerator<P> take(uint32_t offset) {
+        return take_enumerator<P>(std::move(static_cast<P&>(*this)), offset);
     }
 
     auto to_vector() {
@@ -56,7 +62,7 @@ public:
         return m_iterator != other.m_end;
     }
 
-    value_type operator*() const { return *m_iterator; }
+    value_type operator*() { return *m_iterator; }
 
     range_enumerator& operator++() {
         ++this->m_iterator;
@@ -79,7 +85,7 @@ public:
         return m_parent.begin() != other.m_parent.end();
     }
 
-    value_type operator*() const { return m_func(*m_parent); }
+    value_type operator*() { return m_func(*m_parent); }
 
     select_enumerator& operator++() {
         ++m_parent;
@@ -107,7 +113,7 @@ public:
         return m_parent.begin() != other.m_parent.end();
     }
 
-    value_type operator*() const { return *m_parent; }
+    value_type operator*() { return *m_parent; }
 
     drop_enumerator& operator++() {
         ++m_parent;
@@ -116,6 +122,34 @@ public:
 private:
     P m_parent;
     uint32_t m_offset;
+};
+
+template <typename P>
+class take_enumerator : public enumerator<take_enumerator<P>> {
+public:
+    using value_type = P::value_type;
+
+    template <typename P_>
+    take_enumerator(P_&& parent, uint32_t counter)
+        : m_parent(std::forward<P_>(parent)), m_counter(counter) {}
+
+    bool operator!=(const take_enumerator& other) const {
+        if (!m_counter) return false;
+        return m_parent.begin() != other.m_parent.end();
+    }
+
+    value_type operator*() {
+        --m_counter;
+        return *m_parent;
+    }
+
+    take_enumerator& operator++() {
+        ++m_parent;
+        return *this;
+    }
+private:
+    P m_parent;
+    uint32_t m_counter;
 };
 
 }  // namespace impl
