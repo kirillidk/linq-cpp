@@ -20,24 +20,26 @@ void from_select() {
 }
 
 void from_drop_select() {
-    // const int xs[] = {1, 2, 3};
-    // std::vector<int> res = from(xs, xs + 3)
-    //                            .drop(1)
-    //                            .select([](int x) { return x + 5; })
-    //                            .to_vector();
-    // std::vector<int> expected = {7, 8};
-    // assert(res == expected);
-
-    // auto res = from(xs, xs + 3).drop(1);
+    const int xs[] = {1, 2, 3};
+    std::vector<int> res = from(xs, xs + 3)
+                               .drop(1)
+                               .select([](int x) { return x + 5; })
+                               .to_vector();
+    std::vector<int> expected = {7, 8};
+    assert(res == expected);
 }
 
 void range() {
     const int xs[] = {1, 2, 3};
     auto res = from(xs, xs + 3).select([](int x) { return x * x; });
+    std::vector<int> res_vec;
 
     for (auto&& el : res) {
-        std::cout << el;
+        res_vec.emplace_back(el);
     }
+
+    std::vector<int> expected = {1, 4, 9};
+    assert(res_vec == expected);
 }
 
 void range_to_vector() {
@@ -51,8 +53,9 @@ void range_to_vector() {
 int main() {
     from_to_vector();
     from_select();
-    // from_drop_select();
+    from_drop_select();
     range();
     range_to_vector();
+
     return 0;
 }
