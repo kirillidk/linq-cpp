@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(linq-lib-cpp)
 
-option(LINQ_BUILD_EXAMPLES "Build examples" OFF)
+option(BUILD_TESTS "Build tests" OFF)
 
 add_library(linq-lib-cpp INTERFACE)
 
@@ -17,11 +17,11 @@ target_include_directories(linq-lib-cpp
 )
 
 
-if (LINQ_BUILD_EXAMPLES)
-  file(GLOB EXAMPLE_SRCS ${PROJECT_SOURCE_DIR}/examples/*.cpp)
-  foreach(example_src ${EXAMPLE_SRCS})
-    get_filename_component(example_name ${example_src} NAME_WE)
-    add_executable(${example_name} ${example_src})
-    target_link_libraries(${example_name} PRIVATE linq-lib-cpp)
+if (BUILD_TESTS)
+  file(GLOB TEST_SRCS ${PROJECT_SOURCE_DIR}/test/*.cpp)
+  foreach(test_src ${TEST_SRCS})
+    get_filename_component(test_name ${test_src} NAME_WE)
+    add_executable(${test_name} ${test_src})
+    target_link_libraries(${test_name} PRIVATE linq-lib-cpp)
   endforeach()
 endif()
