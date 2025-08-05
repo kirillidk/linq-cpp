@@ -16,7 +16,6 @@ target_include_directories(linq-lib-cpp
       $<INSTALL_INTERFACE:include>
 )
 
-
 if (BUILD_TESTS)
   file(GLOB TEST_SRCS ${PROJECT_SOURCE_DIR}/test/*.cpp)
   foreach(test_src ${TEST_SRCS})

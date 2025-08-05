@@ -12,7 +12,7 @@ template <typename P>
 class enumerator;
 template <typename It>
 class range_enumerator;
-template <typename P, typename F>
+template <typename P, typename F, typename R>
 class select_enumerator;
 template <typename P>
 class drop_enumerator;
@@ -26,8 +26,17 @@ public:
     P end() const { return static_cast<const P&>(*this); }
 
     template <typename F>
-    select_enumerator<P, F> select(F&& func) {
-        return select_enumerator<P, F>(
+    auto select(F&& func) {
+        using return_type = std::invoke_result_t<F, typename P::value_type>;
+
+        return select_enumerator<P, F, return_type>(
+            std::move(static_cast<P&>(*this)), std::forward<F>(func)
+        );
+    }
+
+    template <typename R, typename F>
+    select_enumerator<P, F, R> select(F&& func) {
+        return select_enumerator<P, F, R>(
             std::move(static_cast<P&>(*this)), std::forward<F>(func)
         );
     }
@@ -36,8 +45,8 @@ public:
         return drop_enumerator<P>(std::move(static_cast<P&>(*this)), offset);
     }
 
-    take_enumerator<P> take(uint32_t offset) {
-        return take_enumerator<P>(std::move(static_cast<P&>(*this)), offset);
+    take_enumerator<P> take(uint32_t counter) {
+        return take_enumerator<P>(std::move(static_cast<P&>(*this)), counter);
     }
 
     auto to_vector() {
@@ -72,10 +81,10 @@ private:
     It m_iterator, m_end;
 };
 
-template <typename P, typename F>
-class select_enumerator : public enumerator<select_enumerator<P, F>> {
+template <typename P, typename F, typename R>
+class select_enumerator : public enumerator<select_enumerator<P, F, R>> {
 public:
-    using value_type = P::value_type;
+    using value_type = R;
 
     template <typename P_, typename F_>
     select_enumerator(P_&& parent, F_&& func)
